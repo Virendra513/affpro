@@ -85,6 +85,17 @@
           </a>
         </li>
 
+        <li class="tooltip-element" data-tooltip="5">
+          <a href="#" data-active="5" onclick="showContent('Batch Results')">
+            <div class="icon">
+              <i class='bx bx-bar-chart-square'></i>
+              <i class='bx bxs-bar-chart-square'></i>
+            </div>
+            <span class="link hide">Batch Results</span>
+          </a>
+        </li>
+
+
         <div class="tooltip">
           <span class="show">Predict</span>
           <span>QClair-DDI</span>
@@ -92,6 +103,7 @@
           <span>Ligand Struture Visualization</span>
           <span>Molecular Properties</span>
           <span>Analysis</span>
+          <span>Batch Results</span>
         </div>
       </ul>
     </div>
@@ -178,7 +190,8 @@
       
         <button type="button" id="clearBtn">Clear</button>
     </form>
-<!--
+    <!--
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const form = document.querySelector("#projectForm");
@@ -206,37 +219,37 @@
         });
     </script>
   -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const form = document.querySelector("#projectForm");
-        const inputLigand = document.querySelector("#input1_pl");
-        const inputProtein = document.querySelector("#input2_pl");
-        const resultText = document.querySelector("#resultText"); // Get the result div
-        const clearBtn = document.querySelector("#clearBtn");
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          const form = document.querySelector("#projectForm");
+          const inputLigand = document.querySelector("#input1_pl");
+          const inputProtein = document.querySelector("#input2_pl");
+          const clearBtn = document.querySelector("#clearBtn");
+          const resultText = document.querySelector("#resultText");
 
-        // Restore saved values from localStorage if available
-        inputLigand.value = localStorage.getItem("input1_pl") || "";
-        inputProtein.value = localStorage.getItem("input2_pl") || "";
-        resultText.textContent = localStorage.getItem("resultText") || "{{ result }}"; // Restore result
+          // Restore saved values from localStorage if available
+          inputLigand.value = localStorage.getItem("input1_pl") || "";
+          inputProtein.value = localStorage.getItem("input2_pl") || "";
+          resultText.textContent = localStorage.getItem("resultText") || "{{ result }}"; // Restore result
 
-        form.addEventListener("submit", function () {
-            // Save inputs to localStorage before submission
-            localStorage.setItem("input1_pl", inputLigand.value);
-            localStorage.setItem("input2_pl", inputProtein.value);
-            localStorage.setItem("resultText", resultText.textContent);
-        });
+          form.addEventListener("submit", function () {
+              // Save inputs and result to localStorage before submission
+              localStorage.setItem("input1_pl", inputLigand.value);
+              localStorage.setItem("input2_pl", inputProtein.value);
+              localStorage.setItem("resultText", resultText.textContent);
+          });
 
-        // Clear stored values when clicking "Clear" button
-        clearBtn.addEventListener("click", function () {
-            localStorage.removeItem("input1_pl");
-            localStorage.removeItem("input2_pl");
-            localStorage.removeItem("resultText");
-            inputLigand.value = "";
-            inputProtein.value = "";
-            resultText.textContent = ""; // Clear result
-        });
-    });
-  </script>
+          // Clear stored values when clicking "Clear" button
+          clearBtn.addEventListener("click", function () {
+              localStorage.removeItem("input1_pl");
+              localStorage.removeItem("input2_pl");
+              localStorage.removeItem("resultText");
+              inputLigand.value = "";
+              inputProtein.value = "";
+              resultText.textContent = ""; // Clear result text
+          });
+      });
+    </script>
   </div>
 
 
@@ -332,7 +345,21 @@
 
     <div id="Analysis" class="content" style="display:none;">
       <button class="home-button" onclick="location.href='{% url 'home' %}'">Home</button>
+      </br>
+      </br>
       <h4> Analysis Page </h4>
+    </div>
+
+    <div id="Batch Results" class="content" style="display:none;" >
+      <button class="home-button" onclick="location.href='{% url 'home' %}'">Home</button>
+      
+      <form method="post" enctype="multipart/form-data" action="{% url 'process_form_dd' %}" 
+            style="position: absolute; top: 75px; left 225px;  width: 400px; height: 200px; border: 3px solid black; border-radius:8px; padding: 20px; background-color:rgb(241, 238, 238);">
+        {% csrf_token %}
+        <input type="file" id="csvFile" name="csv_file" accept=".csv" style="margin-bottom: 10px; width: 100%;">
+        <br>
+        <button type="submit" style="padding: 5px 10px; font-size: 14px;">Upload CSV</button>
+      </form>
     </div>
 
 
