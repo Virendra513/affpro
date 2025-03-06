@@ -140,6 +140,16 @@
           </a>
         </li>
 
+        <li class="tooltip-element" data-tooltip="6">
+          <a href="#" data-active="6" onclick="showContent('Batch Results')">
+            <div class="icon">
+              <i class='bx bx-bar-chart-square'></i>
+              <i class='bx bxs-bar-chart-square'></i>
+            </div>
+            <span class="link hide">Batch Results</span>
+          </a>
+        </li>
+
 
 
 
@@ -150,6 +160,7 @@
           <span>Molecular Properties</span>
           <span>PDB-1 Content</span>
           <span>PDB-2 Content</span>
+          <span>Batch Results</span>
         </div>
       </ul>
     </div>
@@ -349,6 +360,18 @@
     disease pathways, and therapeutic targets.
     </p>
   </div>
+  </div>
+
+  <div id="Batch Results" class="content" style="display:none;" >
+    <button class="home-button" onclick="location.href='{% url 'home' %}'">Home</button>
+    
+    <form method="post" enctype="multipart/form-data" action="{% url 'process_form_pp' %}" 
+          style="position: absolute; top: 75px; left 225px;  width: 400px; height: 200px; border: 3px solid black; border-radius:8px; padding: 20px; background-color:rgb(241, 238, 238);">
+      {% csrf_token %}
+      <input type="file" id="csvFile" name="csv_file" accept=".csv" style="margin-bottom: 10px; width: 100%;">
+      <br>
+      <button type="submit" style="padding: 5px 10px; font-size: 14px;">Upload CSV</button>
+    </form>
   </div>
 
   <div id="Protein Structure Visualization" class="content" style="display:none;">
