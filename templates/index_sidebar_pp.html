@@ -1,0 +1,712 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sidebar Menu</title>
+  <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+  <!-- 3D Mol -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.6/3Dmol-min.js"></script>
+<script src="https://3Dmol.org/build/3Dmol-min.js"></script>      
+<script src="https://3Dmol.org/build/3Dmol.ui-min.js"></script> 
+
+<script src="https://cdn.jsdelivr.net/npm/ngl@latest/dist/ngl.js"></script>
+
+
+<style>
+  /* Ensure the container has explicit dimensions */
+  #viewport {
+    width: 800px;
+    height: 275px;
+    border: 1px solid #ccc;
+    position: absolute; /* This enables positioning using top/right */
+    top: 205px;
+    right: 15px;
+  }
+
+  #viewport_2 {
+    width: 800px;
+    height: 275px;
+    border: 1px solid #ccc;
+    position: absolute; /* This enables positioning using top/right */
+    top: 580px;
+    right: 15px;
+  }
+</style>
+
+<style>
+  table {
+      width: 100%;
+      border-collapse: collapse;
+  }
+  table, th, td {
+      border: 1px solid black;
+  }
+  th, td {
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+</style>
+
+
+</head>
+
+<body>
+  <nav>
+    <div class="sidebar-top">
+      <span class="shrink-btn">
+        <i class='bx bx-chevron-left'></i>
+      </span>
+      <a href="{% url 'home' %}">
+        <img src="{% static 'img/favicon_qc.png' %}" class="logo" alt="Home">
+      </a>
+      <h3 class="hide">QClair-PPI</h3>
+    </div>
+
+    <div class="search">
+      <i class='bx bx-search'></i>
+      <input type="text" class="hide" placeholder="Quick Search ...">
+    </div>
+
+    <div class="sidebar-links">
+      <ul>
+        <div class="active-tab"></div>
+        <li class="tooltip-element" data-tooltip="0">
+          <a href="#" class="active" data-active="0" onclick="showContent('Predict')">
+            <div class="icon">
+              <i class='bx bx-tachometer'></i>
+              <i class='bx bxs-tachometer'></i>
+            </div>
+            <span class="link hide">Predict</span>
+          </a>
+        </li>
+        <li class="tooltip-element" data-tooltip="1">
+          <a href="#"  data-active="1" onclick="showContent('QClair-PPI')">
+            <div class="icon">
+              <i class='bx bx-folder'></i>
+              <i class='bx bxs-folder'></i>
+            </div>
+            <span class="link hide">QClair-PPI</span>
+          </a>
+        </li>
+        <li class="tooltip-element" data-tooltip="2">
+          <a href="#" data-active="2" onclick="showContent('Protein Structure Visualization')">
+            <div class="icon">
+              <i class='bx bx-message-square-detail'></i>
+              <i class='bx bxs-message-square-detail'></i>
+            </div>
+            <span class="link hide">Protein Structure Visualization</span>
+          </a>
+        </li>
+        
+        <li class="tooltip-element" data-tooltip="3">
+          <a href="#" data-active="3" onclick="showContent('Molecular Properties')">
+            <div class="icon">
+              <i class='bx bx-bar-chart-square'></i>
+              <i class='bx bxs-bar-chart-square'></i>
+            </div>
+            <span class="link hide">Molecular Properties</span>
+          </a>
+        </li>
+
+
+        <li class="tooltip-element" data-tooltip="4">
+          <a href="#" data-active="4" onclick="showContent('PDB-1 Content')">
+            <div class="icon">
+              <i class='bx bx-bar-chart-square'></i>
+              <i class='bx bxs-bar-chart-square'></i>
+            </div>
+            <span class="link hide">PDB-1 Content</span>
+          </a>
+        </li>
+
+
+        <li class="tooltip-element" data-tooltip="5">
+          <a href="#" data-active="5" onclick="showContent('PDB-2 Content')">
+            <div class="icon">
+              <i class='bx bx-bar-chart-square'></i>
+              <i class='bx bxs-bar-chart-square'></i>
+            </div>
+            <span class="link hide">PDB-2 Content</span>
+          </a>
+        </li>
+
+
+
+
+        <div class="tooltip">
+          <span class="show">Predict</span>
+          <span>QClair-PPI</span>
+          <span>Protein Structure Visualization</span>
+          <span>Molecular Properties</span>
+          <span>PDB-1 Content</span>
+          <span>PDB-2 Content</span>
+        </div>
+      </ul>
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="#" class="account tooltip-element" data-tooltip="0">
+        <i class='bx bx-user'></i>
+      </a>
+      <div class="admin-user tooltip-element" data-tooltip="1">
+        <div class="admin-profile hide">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'img/user.png' %}" class="logo" alt="Home">
+            </a>
+          <div class="admin-info">
+            <h4>{{username}}</h4>
+          </div>
+        </div>
+        
+        <a href='{% url 'logout' %}' class="log-out">
+          <i class='bx bx-log-out'></i>
+        </a>
+        
+      </div>
+      <div class="tooltip">
+        <span class="show">John Doe</span>
+        <span>Logout</span>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    
+    <div id="Predict" class="content" style="display:block;">
+      <button class="home-button" onclick="location.href='{% url 'home' %}'">Home</button>
+      </br>
+      </br>
+      <h1>Predict</h1>
+      <p class="text">Give input as First Protein Sequence-I / PDB file-I and Second Protein Sequence-II / PDB File-II .</p>
+
+      <!-- Form inside Projects Section -->
+      <form id="projectForm" action="{% url 'process_form_pp' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!--
+        <div class="form-group">
+            <label for="input1_pl">Protein Sequence-1</label>
+            <input type="text" id="input1_pl" name="input1_pl" placeholder="Enter Protein Sequence-1" required>
+            <p> OR </p>
+            <label for="input3_pl">Upload PDB File</label>
+            <input type="file" id="input3_pl" name="input3_pl" accept=".pdb">
+        </div>
+        -->
+
+        <div class="outer-container" style="border: 1px solid black; padding: 5px;">
+          <!-- Protein Sequence-1 Section -->
+          <div class="section" style="padding-bottom: 10px; border-bottom: 1px solid #ccc; margin-bottom: 5px;">
+            <label for="input1_pp" style="font-size:18px; font-weight:bold;">Protein Sequence-I:</label>
+            <input type="text" id="input1_pp" name="input1_pp" placeholder="Enter Protein Sequence-I" style="width: 100%; font-size: 16px; padding: 8px;">
+          </div>
+          
+          <!-- OR Section -->
+          <div class="section" style="padding-bottom: 5px; border-bottom: 1px solid #ccc; margin-bottom: 5px; text-align: center;">
+            <p style="margin: 0;">OR</p>
+          </div>
+          
+          <!-- Upload PDB File Section -->
+          <div class="section">
+            <label for="input3_pp" style="font-size:18px; font-weight:bold;">Upload PDB File-I:</label>
+            <input type="file" id="input3_pp" name="input3_pp" accept=".pdb">
+          </div>
+        </div>
+        
+
+
+        <div class="outer-container" style="border: 1px solid black; padding: 5px;">
+          <!-- Protein Sequence-1 Section -->
+          <div class="section" style="padding-bottom: 5px; border-bottom: 1px solid #ccc; margin-bottom: 10px;">
+            <label for="input2_pp" style="font-size:18px; font-weight:bold;">Protein Sequence-II:</label>
+            <input type="text" id="input2_pp" name="input2_pp" placeholder="Enter Protein Sequence-II" style="width: 100%; font-size: 16px; padding: 8px;">
+          </div>
+          
+          <!-- OR Section -->
+          <div class="section" style="padding-bottom: 5px; border-bottom: 1px solid black; margin-bottom: 5px; text-align: center;">
+            <p style="margin: 0;">OR</p>
+          </div>
+          
+          <!-- Upload PDB File Section -->
+          <div class="section">
+            <label for="input4_pp" style="font-size:18px; font-weight:bold;">Upload PDB File:</label>
+            <input type="file" id="input4_pp" name="input4_pp" accept=".pdb">
+          </div>
+        </div>
+        
+        
+
+    <!-- 
+        <div class="form-group">
+            <label for="input2_pl">Protein Sequence-2</label>
+            <textarea id="input2_pl" name="input2_pl" placeholder="Enter Protein Sequence-2" required></textarea>
+        </div>
+
+        
+    -->    
+        <button type="submit">Submit</button>
+        <!-- 
+        <div id="resultContainer" style=" margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
+            <h3>Result:{{result}}</h3>
+            <p id="resultText"></p>
+        </div>
+        <button type="button" id="clearBtn">Clear</button>
+        -->
+
+        <div id="resultContainer" style="margin-top: 20px; padding: 10px; border: 1px solid black;">
+          <h3>Result:</h3>
+          <div id="resultText" style="padding: 10px; background-color: #f0f0f0; border: 1px solid #ccc;">
+            {{ result }}
+          </div>
+        </div>
+        <button type="button" id="clearBtn">Clear</button>
+        
+      </form>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const form = document.querySelector("#projectForm");
+          const inputLigand = document.querySelector("#input1_pp");
+          const inputProtein = document.querySelector("#input2_pp");
+          const clearBtn = document.querySelector("#clearBtn");
+          const resultText = document.querySelector("#resultText");
+      
+          // Restore saved values from localStorage if available
+          inputLigand.value = localStorage.getItem("input1_pp") || "";
+          inputProtein.value = localStorage.getItem("input2_pp") || "";
+      
+          form.addEventListener("submit", function () {
+            // Save inputs to localStorage before submission
+            localStorage.setItem("input1_pp", inputLigand.value);
+            localStorage.setItem("input2_pp", inputProtein.value);
+          });
+      
+          // Clear stored values and result text when clicking "Clear" button
+          clearBtn.addEventListener("click", function () {
+            localStorage.removeItem("input1_pp");
+            localStorage.removeItem("input2_pp");
+            inputLigand.value = "";
+            inputProtein.value = "";
+            // Clear the result container content
+            resultText.innerHTML = "";
+          });
+        });
+      </script>
+      
+  </div>
+
+
+  
+
+  <div id="QClair-PPI" class="content" style="display:none;">
+    <button class="home-button" onclick="location.href='{% url 'home' %}'">Home</button>
+    </br>
+    </br>
+    <div style="
+    position: relative; 
+    background-image: url('{% static "img/PP_bg.jpeg" %}'); 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    height: 800px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: top; 
+    text-align: left;
+    ">
+ <!-- Overlay for better text visibility -->
+    <div style="
+        position: absolute; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%; 
+        background-color: rgba(223, 231, 231, 0.5); 
+        z-index: 1;
+        "></div>
+
+        <!-- Text content -->
+    <p style="
+        position: relative; 
+        z-index: 10; 
+        color: rgba(0, 0, 0, 0.7); 
+        font-size: 18px; 
+        font-weight: bold; 
+        margin: 0; 
+        padding: 20px; 
+        text-shadow: 1px 1px 5px rgba(229, 241, 241, 0.7);
+    ">
+    QClair-ProteinPro Predictor is designed to forecast the interactions between two proteins. These interactions are fundamental to many biological processes,
+    including cellular signaling, immune responses, and enzymatic regulation. Understanding and predicting PPIs can provide insights into cellular mechanisms,
+    disease pathways, and therapeutic targets.
+    </p>
+  </div>
+  </div>
+
+  <div id="Protein Structure Visualization" class="content" style="display:none;">
+    <button class="home-button" onclick="location.href='{% url 'home' %}'">Home</button>
+    </br>
+    </br>
+    <h1>Visualize Protein Structures from Uploaded PDB Files / PDBID: </h1>
+    <div style=" text-align: center;">
+      </br>
+      <!-- <h2>Protein Structure Visualization</h2> -->
+      </br>
+      </br>
+      </br>
+      <!-- 
+      <div style="position: absolute; top: 150px; left: 550px; padding: 10px; border: 1px solid #ccc; z-index: 100;">
+        <h4 style="margin: 0 0 10px 0;">Load a Protein Structure by PDB File</h4>
+        <input type="file"  id="input4_pl" name="input4_pl" accept=".pdb">
+        <button type="submit" style="padding: 5px 10px; font-size: 14px; margin-top: 10px;">Load Structure</button>
+      </div>
+
+      -->
+      <!--
+      <form id="pbdform" action="{% url 'process_form_pl' %}" method="post" enctype="multipart/form-data" style="position: absolute; top: 150px; left: 550px; padding: 10px; border: 1px solid #ccc; z-index: 100;">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="pdb">
+        <h4 style="margin: 0 0 10px 0;">Load a Protein Structure by PDB File</h4>
+        <input type="file" id="input4_pl" name="input4_pl" accept=".pdb">
+        <button type="submit" id="loadBtn" style="padding: 5px 10px; font-size: 14px; margin-top: 10px;">Load Structure</button>
+      </form>
+      -->
+
+      <script>
+        document.getElementById("loadBtn").addEventListener("submit", function() {
+          var fileInput = document.getElementById("input4_pl");
+          if (fileInput.files.length === 0) {
+            alert("Please select a file to upload.");
+            return;
+          }
+          
+          var form = document.getElementById("pbdform");
+          var formData = new FormData(form);
+          
+          // Log the file to ensure it's attached
+          console.log("Selected file:", fileInput.files[0]);
+          
+          fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin'
+          })
+          .then(response => {
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+              return response.json();
+            } else {
+              return response.text();
+            }
+          })
+          .then(data => {
+            console.log('Success:', data);
+            // Update your UI accordingly here.
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        });
+      </script>
+
+
+    
+    
+    
+
+      <div id="viewer-container" style="position: absolute; top: 175px; left: 300px;">
+        <p style="margin-bottom: 5px; font-weight: bold; text-align: center;">PDB-I Protein Structure</p>
+        {{ pdb_visual_1|safe }}
+      </div>
+      
+      <!-- 
+      <div style="position: absolute; top: 125px; right: 250px; padding: 10px; border: 1px solid #ccc; z-index: 100;">
+        <h4 style="margin: 0 0 10px 0;">Load a Protein Structure by PDB ID</h4>
+        <input type="text" id="pdbId" placeholder="Enter PDB ID (e.g., 1crn)" style="padding: 5px; font-size: 14px;" />
+        <button onclick="loadStructure()" style="padding: 5px 10px; font-size: 14px; margin-top: 10px;">Load Structure</button>
+      </div>
+      <div id="viewport"></div>
+      -->
+      <!-- 
+      <div style="position: absolute; top: 125px; right: 250px; padding: 10px; border: 1px solid #ccc; z-index: 100;">
+        <h4 style="margin: 0 0 10px 0;">Load First Protein Structure by PDB ID</h4>
+        <input type="text" id="pdbId1" placeholder="Enter PDB ID (e.g., 2AZW)" style="padding: 5px; font-size: 14px;" />
+        <button onclick="loadStructure(stage1, 'pdbId1')" style="padding: 5px 10px; font-size: 14px; margin-top: 10px;">Load Structure</button>
+      </div>
+      -->
+      <div style="position: absolute; top: 145px; right: 120px; padding: 10px; border: 1px solid #ccc; width: 600px; z-index: 100; display: flex; align-items: center; gap: 10px;">
+        <h4 style="margin: 0; white-space: nowrap;">Load First Protein Structure by PDB ID:</h4>
+        <input type="text" id="pdbId1" placeholder="Enter PDB ID (e.g., 2AZW)" style="padding: 5px; font-size: 14px; flex: 1;" />
+        <button onclick="loadStructure(stage1, 'pdbId1')" style="padding: 5px 10px; font-size: 14px;">Load</button>
+      </div>
+    
+
+      <div id="viewport"></div>
+
+      <br>
+
+
+      <div id="viewer-container" style="position: absolute; top: 525px; left: 300px;">
+        <p style="margin-bottom: 5px; font-weight: bold; text-align: center;">PDB-II Protein Structure</p>
+        {{ pdb_visual_2|safe }}
+      </div>
+
+      <!--
+
+      <div style="position: absolute; top: 525px; right: 250px; padding: 10px; border: 1px solid #ccc; z-index: 100;">
+        <h4 style="margin: 0 0 10px 0;">Load Second Protein Structure by PDB ID</h4>
+        <input type="text" id="pdbId2" placeholder="Enter PDB ID (e.g., 1CRN)" style="padding: 5px; font-size: 14px;" />
+        <button onclick="loadStructure(stage2, 'pdbId2')" style="padding: 5px 10px; font-size: 14px; margin-top: 10px;">Load Structure</button>
+      </div>
+
+      -->
+
+      <div style="position: absolute; top: 520px; right: 120px; padding: 10px; border: 1px solid #ccc; width: 600px; z-index: 100; display: flex; align-items: center; gap: 10px;">
+        <h4 style="margin: 0; white-space: nowrap;">Load Second Protein Structure by PDB ID:</h4>
+        <input type="text" id="pdbId2" placeholder="Enter PDB ID (e.g., 1CRN)" style="padding: 5px; font-size: 14px; flex: 1;" />
+        <button onclick="loadStructure(stage2, 'pdbId2')" style="padding: 5px 10px; font-size: 14px;">Load</button>
+      </div>
+    
+
+      <div id="viewport_2"></div>
+
+      <!--
+
+      <div style="position: absolute; top: 525px; right: 250px; padding: 10px; border: 1px solid #ccc; z-index: 100;">
+        <h4 style="margin: 0 0 10px 0;">Load a Protein Structure by PDB ID</h4>
+        <input type="text" id="pdbId" placeholder="Enter PDB ID (e.g., 1crn)" style="padding: 5px; font-size: 14px;" />
+        <button onclick="loadStructure_2()" style="padding: 5px 10px; font-size: 14px; margin-top: 10px;">Load Structure</button>
+      </div>
+      <div id="viewport_2"></div>
+      -->
+
+<!--
+      <div id="viewer-container" style="position: absolute; top: 250px; left: 300px;">
+        {{ pdb_visual_2|safe }}
+      </div>
+    
+
+      
+      
+      <div style="position: absolute; top: 150px; right: 250px; padding: 10px; border: 1px solid #ccc; z-index: 100;">
+        <h4 style="margin: 0 0 10px 0;">Load a Protein Structure by PDB ID</h4>
+        <input type="text" id="pdbId" placeholder="Enter PDB ID (e.g., 1crn)" style="padding: 5px; font-size: 14px;" />
+        <button onclick="loadStructure()" style="padding: 5px 10px; font-size: 14px; margin-top: 10px;">Load Structure</button>
+      </div>
+      <div id="viewport"></div>
+
+    -->
+    <script>
+      var stage1, stage2;
+    
+      // Initialize both stages after window loads
+      window.onload = function() {
+        stage1 = new NGL.Stage("viewport");
+        stage2 = new NGL.Stage("viewport_2");
+      };
+    
+      // Generic function to load structure into the given stage
+      function loadStructure(stage, inputId) {
+        var pdb = document.getElementById(inputId).value.trim();
+        if (!pdb) {
+          alert("Please enter a valid PDB ID.");
+          return;
+        }
+    
+        // Remove previous structure and load new one
+        stage.removeAllComponents();
+        stage.loadFile("rcsb://" + pdb, { defaultRepresentation: true })
+          .then(function(component) {
+            stage.autoView();
+            stage.handleResize();
+          })
+          .catch(function(error) {
+            alert("Error loading structure: " + error);
+          });
+      }
+    </script>
+
+      <!-- 
+      <script>
+        var stage;
+    
+        // Initialize stage after window load to ensure container is ready
+        window.onload = function() {
+          stage = new NGL.Stage("viewport");
+          
+        };
+    
+        // Function to load the structure using the PDB ID entered by the user
+        function loadStructure() {
+          var pdb = document.getElementById('pdbId').value.trim();
+          if (!pdb) {
+            alert("Please enter a valid PDB ID.");
+            return;
+          }
+          
+          // Clear previous components
+          stage.removeAllComponents();
+          
+          // Load the structure from RCSB using the provided PDB ID
+          stage.loadFile("rcsb://" + pdb, { defaultRepresentation: true })
+            .then(function(component) {
+              stage.autoView();
+              stage.handleResize();
+            })
+            .catch(function(error) {
+              alert("Error loading structure: " + error);
+            });
+        }
+      </script>
+
+
+      <script>
+        var stage_2;
+    
+        // Initialize stage after window load to ensure container is ready
+        window.onload = function() {
+          stage_2 = new NGL.Stage("viewport_2");
+          
+        };
+    
+        // Function to load the structure using the PDB ID entered by the user
+        function loadStructure_2() {
+          var pdb = document.getElementById('pdbId').value.trim();
+          if (!pdb) {
+            alert("Please enter a valid PDB ID.");
+            return;
+          }
+          
+          // Clear previous components
+          stage_2.removeAllComponents();
+          
+          // Load the structure from RCSB using the provided PDB ID
+          stage_2.loadFile("rcsb://" + pdb, { defaultRepresentation: true })
+            .then(function(component) {
+              stage_2.autoView();
+              stage_2.handleResize();
+            })
+            .catch(function(error) {
+              alert("Error loading structure: " + error);
+            });
+        }
+      </script>
+
+    -->
+
+
+
+
+
+
+
+    </div>  
+  </div> 
+
+
+   
+    
+
+  
+    
+    <div id="PDB-1 Content" class="content" style="display:none;">
+      <button class="home-button" onclick="location.href='{% url 'home' %}'">Home</button>
+      </br>
+      </br>
+      <h1>PDB File-I Content:</h1>
+      <div id="pdb_table_container">
+        <!-- Use the safe filter to render the HTML table -->
+        {{ pdb_read_1|safe }}
+      </div>
+    </div>
+
+
+    <div id="PDB-2 Content" class="content" style="display:none;">
+      <button class="home-button" onclick="location.href='{% url 'home' %}'">Home</button>
+      </br>
+      </br>
+      <h1>PDB File-II Content:</h1>
+      <div id="pdb_table_container">
+        <!-- Use the safe filter to render the HTML table -->
+        {{ pdb_read_2|safe }}
+      </div>
+    </div>
+
+
+
+
+
+
+    <div id="Molecular Properties" class="content" style="display:none;">
+      <button class="home-button" onclick="location.href='{% url 'home' %}'">Home</button>
+      </br>
+      </br>
+      <h1>Molecular Properties</h1>
+      <p class="text">The features of the Protein Sequence-1 and Protein Sequence-2, derived from the user's input, are displayed below.</p>
+      </br>
+          <div style="display: flex; justify-content: space-between; gap: 20px;">
+            <!-- First Flex Container for Ligand Descriptors Table -->
+            
+            <div style="flex: 1;">
+                <h2 style="text-align: center; max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: auto;">Protein Sequence-1: {{input1}}</h2>
+                </br>
+                <table border="1" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="border: 1px solid black; text-align: center;">Protein-1 Properties</th>
+                            <th style="border: 1px solid black; text-align: center;">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for name, value in protein_descriptors_1.items %}
+                            <tr>
+                                <td style="border: 1px solid black; text-align: center;">{{ name }}</td>
+                                <td style="border: 1px solid black; text-align: center;">{{ value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        
+            <!-- Second Flex Container for Protein Properties Table -->
+            <div style="flex: 1;">
+                <h2 style="text-align: center; max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: auto;">Protein Sequence-2: {{input2}}</h2>
+                </br>
+                <table border="1" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="border: 1px solid black; text-align: center;">Protein-2 Properties</th>
+                            <th style="border: 1px solid black; text-align: center;">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for name, value in protein_descriptors_2.items %}
+                            <tr>
+                                <td style="border: 1px solid black; text-align: center;">{{ name }}</td>
+                                <td style="border: 1px solid black; text-align: center;">{{ value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+          </div>
+    </div>
+
+    <p class="copyright">
+      &copy; 2025 - <span>QClairvoyance Quantum Labs Pvt. Ltd</span> All Rights Reserved.
+    </p>
+  </main>
+
+  <script src="{% static 'js/app_pp.js'%}"></script>
+  <script src="{% static 'js/3D_viewer.js'%}"></script>
+</body>
+
+</html>
