@@ -32,6 +32,7 @@ urlpatterns = [
     path('index-prot-str/', views.dropdown_prot_str, name='process_form_prot_str'), 
     path('index-li-desc/', views.dropdown_li_desc, name='process_form_li_desc'), 
     path('index-pro-desc/', views.dropdown_pro_desc, name='process_form_pro_desc'),
+    path('index-pdb-read/', views.dropdown_read_pdb, name='process_form_pdb_read'),
     path("signup/", views.signup_view, name="signup"),   # Sign-up page
     path("login/", views.login_view, name="login"),     # Login page
     path("logout/", views.logout_view, name="logout"),  # Logout functionality

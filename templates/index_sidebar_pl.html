@@ -6,6 +6,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="{% static 'img/favicon_qc.png' %}" rel="icon">
   <title>Sidebar Menu</title>
   <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
 
@@ -155,6 +156,16 @@
           </a>
         </li>
 
+        <li class="tooltip-element" data-tooltip="6">
+          <a href="#" data-active="6" onclick="showContent('Batch Results')">
+            <div class="icon">
+              <i class='bx bx-bar-chart-square'></i>
+              <i class='bx bxs-bar-chart-square'></i>
+            </div>
+            <span class="link hide">Batch Results</span>
+          </a>
+        </li>
+
 
         <div class="tooltip">
           <span class="show">Predict</span>
@@ -163,6 +174,7 @@
           <span>Ligand Struture Visualization</span>
           <span>Molecular Properties</span>
           <span>PDB File Content</span>
+          <span>Batch Results</span>
         </div>
       </ul>
       <!--
@@ -248,7 +260,7 @@
 
         <div class="form-group" style="border: 1px solid black; padding: 15px; border-radius: 8px; width: 400px; background-color: #f9f9f9;">
           <label for="input1_pl" style="font-weight: bold; display: block; margin-bottom: 5px;">Ligand SMILES*</label>
-          <input type="text" id="input1_pl" name="input1_pl" placeholder="Enter SMILES" required 
+          <input type="text" id="input1_pl" name="input1_pl" placeholder="Enter SMILES e.g: CCC" required
                  style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
         </div>
         <!--
@@ -273,7 +285,7 @@
           <!-- Protein Sequence Input -->
           <div class="form-group" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; margin-bottom: 10px; background-color: #fff;">
               <label for="input2_pl" style="font-weight: bold;">Protein Sequence</label>
-              <textarea id="input2_pl" name="input2_pl" placeholder="Enter Protein Sequence" 
+              <textarea id="input2_pl" name="input2_pl" placeholder="Enter Protein Sequence e.g: AAAAA"
                         style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
           </div>
       
@@ -511,6 +523,7 @@
         </script>
 
 
+
         
         
     
@@ -587,29 +600,30 @@
       </br>
       </br>
       <h1>Visualize Ligand</h1>
-      <p>You can visualize Ligand 2D and 3D structure.</p>
-          </br>
+      <p>Visualization of Ligand 2D and 3D structure.</p>
+          <br>
+          
           <!-- Third Div: Protein Sequence Visualization -->
-          <div style="display: flex; justify-content: center; gap: 10px; align-items: center;">
+          <div style="display: flex; justify-content: center; gap: 5px; align-items: center;">
             <!-- First Div: SMILES 2D Visualization -->
-            <div style="flex: 1.5; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                <h2>SMILES 2D Visualization:</h2>
+            <div style="flex: 2.5; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; width: 400px; height: 600px; border: 1px solid black;padding: 10px; border-radius: 5px;">
+                <h2 style="margin: 0;">SMILES 2D Visualization:</h2>
+                <br>
                 {{ smiles_visualization|safe }}
             </div>
             <!-- Second Div: SMILES 3D Visualization -->
-            <div style="flex: 2.5; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                <h2>SMILES 3D Visualization:</h2>
+            <div style="flex: 2.5; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; width: 400px; height: 600px; border: 1px solid black;padding: 10px; border-radius: 5px;">
+                <h2 style="margin: 0;">SMILES 3D Visualization:</h2>
+                <br>
                 {{ smiles_3D_visualization|safe }}
-                
             </div>
-            <!--
-            <div style=" text-align: center;">
-              <h2>Protein Sequence Visualization:</h2>
-              <div style="height: 400px; width: 400px; position: absolute;" class='viewer_3Dmoljs' data-pdb="" data-backgroundcolor='0xffffff' data-style='stick' data-ui='true'></div>
-            </div>
-            -->
           </div>
+          
     </div>
+
+
+
+    
 
 
     
@@ -624,6 +638,22 @@
           {{ pdb_read|safe }}
       </div>
     </div>
+
+
+    <div id="Batch Results" class="content" style="display:none;" >
+      <button class="home-button" onclick="location.href='{% url 'home' %}'">Home</button>
+      
+      <form method="post" enctype="multipart/form-data" action="{% url 'process_form_pl' %}" 
+            style="position: absolute; top: 75px; left 225px;  width: 400px; height: 200px; border: 3px solid black; border-radius:8px; padding: 20px; background-color:rgb(241, 238, 238);">
+        {% csrf_token %}
+        <input type="file" id="csvFile" name="csv_file" accept=".csv" style="margin-bottom: 10px; width: 100%;">
+        <br>
+        <button type="submit" style="padding: 5px 10px; font-size: 14px;">Upload CSV</button>
+      </form>
+    </div>
+    
+    
+    
 
 
     <div id="Molecular Properties" class="content" style="display:none;">

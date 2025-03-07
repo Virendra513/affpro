@@ -312,7 +312,7 @@ def sidebar_dd(request):
     username = request.session.get("username", None)  # Get username from session
     input1 = ''
     input2= ''
-    result = None
+    result = ''
     smiles_visualization_1 = None
     smiles_3D_visualization_1 = None 
     smiles_visualization_2 = None
@@ -545,16 +545,83 @@ def sidebar_pp(request):
 
 
 def dropdown_mol_str(request):
-    return render(request, 'dropdown_visualize_molstr.html')
+    input1=""
+    smiles_visualization_1 = None
+    smiles_3D_visualization_1 = None 
+    
+    if request.method == 'POST':
+        input1 = request.POST.get('input1', '')
+
+        if input1:
+            smiles_visualization_1 = visualize_smiles_2(input1)
+            smiles_3D_visualization_1=visualize_3D_smiles_2(input1)
+
+    return render(request, 'dropdown_visualize_molstr.html', {'input1': input1,'smiles_visualization_1': smiles_visualization_1,
+        'smiles_3D_visualization_1':smiles_3D_visualization_1,})
+                                                              
 
 def dropdown_prot_str(request):
-    return render(request, 'dropdown_visualize_protstr.html')
+
+    input1=""
+    pdb_visual="Load the PDB File"
+    
+
+    if request.method == 'POST':
+        input1 = request.FILES.get('input3_pl')
+
+        if input1:
+            pdb_visual = visualize_pdb_protstr(input1)
+    
+   
+    return render(request, 'dropdown_visualize_protstr.html', {'pdb_visual':pdb_visual})
 
 def dropdown_li_desc(request):
-    return render(request, 'dropdown_descriptor_li.html')
+    input1=""
+    descriptors=None 
+   
+
+    if request.method == 'POST':
+        input1 = request.POST.get('input1', '')
+        descriptors = generate_ligand_descriptors(input1)
+
+    return render(request, 'dropdown_descriptor_li.html',{'input1':input1,'descriptors':descriptors})
 
 def dropdown_pro_desc(request):
-    return render(request, 'dropdown_descriptor_pro.html')
+    input1=""
+    input2=None
+    protein_descriptors_1= None
+
+
+    if request.method == 'POST':
+        input1 = request.POST.get('input1', '')
+        input2 = request.FILES.get('input3_pl')
+        
+
+        if input1:
+            protein_descriptors_1 = extract_protein_descriptors(input1)
+
+    
+        if input2:
+            input1 = str(get_chain_a_sequence(input2))
+            protein_descriptors_1 = extract_protein_descriptors(input1)
+    
+    return render(request, 'dropdown_descriptor_pro.html', {'input1':input1, 'protein_descriptors_1':protein_descriptors_1})
+
+def dropdown_read_pdb(request):
+    
+    input1=""
+    pdb_read_1="Load the PDB file.."
+
+    if request.method == 'POST':
+        input1 = request.FILES.get('input3_pl')
+    
+
+        if input1:
+                pdb_read_1= parse_atom_records_with_units_html(input1)
+        else:
+            print("Project form: Not Uploaded file for input3_pl")
+
+    return render(request, 'dropdown_read_pdb.html', {'input1':input1, 'pdb_read_1':pdb_read_1})
 
 
 from django.shortcuts import render, redirect
@@ -677,6 +744,32 @@ def visualize_pdb_pp(pdbfile):
 
     # Create a py3Dmol viewer
     view = py3Dmol.view(width=800, height=300)
+
+    # Load the PDB structure
+    view.addModel(pdb_data, "pdb")  
+
+    # Apply a cartoon representation
+    view.setStyle({"cartoon": {"color": "spectrum"}})
+
+    # Zoom to fit the structure
+    view.zoomTo()
+
+    embed_code = view._make_html()  
+
+    return embed_code
+
+
+def visualize_pdb_protstr(pdbfile):
+    """
+    # Read the PDB file content
+    with open(pdbfile, "r") as pdb_file:
+        pdb_data = pdb_file.read()
+    """
+
+    pdb_data = pdbfile.read().decode('utf-8')
+
+    # Create a py3Dmol viewer
+    view = py3Dmol.view(width=900, height=500)
 
     # Load the PDB structure
     view.addModel(pdb_data, "pdb")  
@@ -815,3 +908,46 @@ def dd_results(ligand, sequence):
 
 def pp_results(ligand, sequence):
     pass
+
+
+def visualize_3D_smiles_2(smiles):
+    try:
+        # Convert SMILES to molecule
+        mol = Chem.MolFromSmiles(smiles)
+        mol = Chem.AddHs(mol)  # Add hydrogens
+        AllChem.EmbedMolecule(mol)  # Generate 3D coordinates
+        AllChem.UFFOptimizeMolecule(mol)  # Optimize structure
+        pdb_block = Chem.MolToPDBBlock(mol)  # Convert to PDB format
+
+        # Generate 3D visualization using py3Dmol
+        view = py3Dmol.view(width=900, height=300)
+        view.addModel(pdb_block, "pdb")  # Add PDB model
+        view.setStyle({'stick': {}})  # Use stick model
+        view.zoomTo()  # Zoom to fit the molecule
+
+        # Generate HTML for embedding in template
+        return view._make_html()
+    except Exception as e:
+        return f"<p style='color: red;'>Error visualizing SMILES: {e}</p>"
+    
+
+
+
+def visualize_smiles_2(smiles):
+    try:
+        mol = Chem.MolFromSmiles(smiles)
+        if mol:
+            # Specify desired image size (e.g., 300x300 pixels)
+            img = Draw.MolToImage(mol, size=(300, 300))
+            
+            buffer = io.BytesIO()
+            img.save(buffer, format="PNG")
+            img_str = base64.b64encode(buffer.getvalue()).decode("utf-8")
+            buffer.close()
+            
+            # You can also control the displayed size via HTML if you like
+            return f'<img src="data:image/png;base64,{img_str}" alt="SMILES Visualization" width="500" height="350" />'
+        else:
+            return "<p>Invalid SMILES string</p>"
+    except Exception as e:
+        return f"<p>Error generating visualization: {e}</p>"
